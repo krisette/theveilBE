@@ -11,30 +11,13 @@ const drawCardsLogic = async (count) => {
       throw new Error(`Invalid max index: ${maxIndex}`);
     }
 
-    const drawnCards = [];
-    const promises = [];
+    const randomIndices = await getRandomNumber(count, 0, maxIndex);
+    const randomOrientations = await getRandomNumber(count, 0, 1);
 
-    for (let i = 0; i < count; i += 1) {
-      const randomIndexPromise = getRandomNumber(1, 0, maxIndex);
-      const randomOrientationPromise = getRandomNumber(1, 0, 1);
-
-      promises.push(randomIndexPromise);
-      promises.push(randomOrientationPromise);
-    }
-
-    const results = await Promise.all(promises);
-
-    for (let i = 0; i < count; i += 1) {
-      const randomIndex = results[i * 2];
-      const randomOrientation = results[i * 2 + 1];
-
-      const drawnCard = {
-        ...cards[randomIndex],
-        orientation: randomOrientation === 0 ? 'up' : 'reversed',
-      };
-
-      drawnCards.push(drawnCard);
-    }
+    const drawnCards = randomIndices.map((index, i) => ({
+      ...cards[index],
+      orientation: randomOrientations[i] === 0 ? 'up' : 'reversed',
+    }));
 
     return drawnCards;
   } catch (error) {

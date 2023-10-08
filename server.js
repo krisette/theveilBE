@@ -1,7 +1,7 @@
 const app = require('./app');
 
-const PORT = process.env.PORT || 3000;
+const { PORT, HOST_NAME } = process.env;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`the veil is running on http://${HOST_NAME}:${PORT} 🔮`);
 });

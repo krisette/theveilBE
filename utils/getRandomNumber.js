@@ -25,7 +25,7 @@ const getRandomNumber = async (num, min, max) => {
       },
     });
 
-    const data = response.data.trim().split('\n').map(Number);
+    const data = String(response.data).trim().split('\n').map(Number);
     return data;
   } catch (error) {
     console.error(error);
