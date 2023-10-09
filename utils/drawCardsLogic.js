@@ -1,23 +1,27 @@
+const Card = require('../models/card');
 const getRandomNumber = require('./getRandomNumber');
-const cardData = require('../data/cards.json');
-
-const { cards } = cardData;
 
 const drawCardsLogic = async (count) => {
   try {
-    const maxIndex = cards.length - 1;
+    const maxIndex = await Card.countDocuments(); // Get count of documents in MongoDB
 
     if (!Number.isInteger(maxIndex) || maxIndex < 0) {
       throw new Error(`Invalid max index: ${maxIndex}`);
     }
 
-    const randomIndices = await getRandomNumber(count, 0, maxIndex);
+    const randomIndices = await getRandomNumber(count, 0, maxIndex - 1);
     const randomOrientations = await getRandomNumber(count, 0, 1);
 
-    const drawnCards = randomIndices.map((index, i) => ({
-      ...cards[index],
-      orientation: randomOrientations[i] === 0 ? 'up' : 'reversed',
-    }));
+    const drawnCards = await Promise.all(
+      randomIndices.map(async (index) => {
+        const card = await Card.findOne().skip(index).limit(1);
+        return {
+          // eslint-disable-next-line no-underscore-dangle
+          ...card._doc,
+          orientation: randomOrientations[index] === 0 ? 'up' : 'reversed',
+        };
+      }),
+    );
 
     return drawnCards;
   } catch (error) {
